@@ -1,0 +1,45 @@
+body {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+body .one_page_scroll {
+  height: 100%;
+}
+body .page_wrapper {
+  position: relative;
+  height: 100%;
+  transition: all 1000ms ease 0s;
+}
+body .dot {
+  background: #ffff;
+  border-radius: 50%;
+  width: 5px;
+  height: 15px;
+  margin: 0 5px;
+  outline: 0;
+  cursor: pointer;
+  display: inline-block;
+}
+body .dot:hover {
+  background-color: #42b6f5;
+}
+body .dots {
+  text-align: center;
+  margin-bottom: 20px;
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+}
+body .red {
+  background: #ff5f45;
+}
+body .green {
+  background: #2fd069;
+}
+body .yellow {
+  background: #fec401;
+}
+body .blue {
+  background: #0798ec;
+}

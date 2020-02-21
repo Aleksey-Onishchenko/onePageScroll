@@ -7,16 +7,16 @@ class OnePageScroll {
     this.onLockChange = false;
 
     this.pageWrapper = document.createElement('div');
+    this.pages = document.querySelectorAll('.page');
 
-
-    window.goNext = this.goNext.bind(this);
     window.goBack = this.goBack.bind(this);
+    window.goNext = this.goNext.bind(this);
     window.onload = this.addTransformForWrapper();
     window.onresize = OnePageScroll.addResizeEvent;
     this.addFullPageWrapper();
 
     this.addDots();
-    this.addEventsForButton();
+    OnePageScroll.addEventsForButton();
     this.addActiveClassForDots();
   }
 
@@ -28,7 +28,8 @@ class OnePageScroll {
   addFullPageWrapper() {
     this.scrollPage.append(this.pageWrapper);
     this.pageWrapper.className = 'page_wrapper';
-    this.pages = document.querySelectorAll('.page');
+    // this.pages = document.querySelectorAll('.page');
+    // console.log('pages:', this.pages.length);
     const pagesArray = Array.from(this.pages);
     pagesArray.forEach((page) => this.pageWrapper.append(page));
     this.addHeightForPages();
@@ -45,24 +46,21 @@ class OnePageScroll {
     this.pageWrapper.style.transform = `translateY(${-window.innerHeight * this.currentPage}px)`;
   }
 
-  goBack() {
-    console.log('goBack:', this.currentPage);
-    if (this.currentPage === 0) {
-      this.currentPage = this.pagesLength - 1;
+  goNext() {
+    if (this.currentPage === this.pages - 1) {
+      this.currentPage = this.pages - 1;
     } else {
-      this.currentPage -= 1;
+      this.currentPage += 1;
     }
     this.addTransformForWrapper();
     this.addActiveClassForDots();
   }
 
-  goNext() {
-    console.log('goNext:', this.currentPage);
-    this.currentPage += 1;
-    if (this.currentPage === this.pagesLength - 1) {
-      this.pagesLength = 0;
+  goBack() {
+    if (this.currentPage === 0) {
+      this.currentPage = 0;
     } else {
-      this.pagesLength += 1;
+      this.currentPage -= 1;
     }
     this.addTransformForWrapper();
     this.addActiveClassForDots();
@@ -75,31 +73,51 @@ class OnePageScroll {
   }
 
   addDots() {
-    const pages = this.pageWrapper.children.length;
+    this.pages = this.pageWrapper.children.length;
     const divForDots = document.createElement('div');
     divForDots.className = 'dots';
     this.scrollPage.append(divForDots);
-    for (let i = 0; i < pages; i += 1) {
+    for (let i = 0; i < this.pages; i += 1) {
       const dot = document.createElement('button');
       dot.className = 'dot';
       divForDots.append(dot);
     }
     this.dots = divForDots.children;
-    this.addEventsForDots();
+    // this.addEventsForDots();
   }
 
   addEventsForDots() {
-
-  //  this.goTo();
+    for (let i = 0; i < this.pages; i += 1) {
+      this.dots[i].addEventListener('click', this.goTo.bind(this, i));
+    }
   }
 
-  addEventsForButton() {
-    // this.goNext();
-    // this.goBack();
+  static addEventsForButton() {
+    document.onkeydown = function (event) {
+      if (event.keyCode === 40) {
+        // this.goNext();
+        console.log('go bottom');
+      }
+      if (event.keyCode === 38) {
+        // this.goBack.bind(this);
+        console.log('go top');
+      }
+    };
+
+    document.onwheel = function (event) {
+      if (event.deltaY > 0) {
+        console.log('Вниз');
+      } else {
+        console.log('Вверх');
+      }
+    };
   }
 
   addActiveClassForDots() {
-  
+    for (let i = 0; i < this.pages; i += 1) {
+      this.dots[i].classList.remove('active');
+    }
+    this.dots[this.currentPage].classList.add('active');
   }
 
 

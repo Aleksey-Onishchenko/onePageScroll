@@ -9,7 +9,8 @@ class OnePageScroll {
     this.pageWrapper = document.createElement('div');
 
 
-    // window.goNext = this.goNext.bind(this);
+    window.goNext = this.goNext.bind(this);
+    window.goBack = this.goBack.bind(this);
     window.onload = this.addTransformForWrapper();
     window.onresize = OnePageScroll.addResizeEvent;
     this.addFullPageWrapper();

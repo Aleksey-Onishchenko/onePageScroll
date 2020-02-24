@@ -135,4 +135,3 @@ class OnePageScroll {
 const OnePageScrollInstance = new OnePageScroll('one_page_scroll');
 
 window.OnePageScrollInstance = OnePageScrollInstance;
-// OnePageScrollInstance.method()

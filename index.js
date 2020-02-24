@@ -10,10 +10,10 @@ class OnePageScroll {
     this.pageWrapper = document.createElement('div');
     this.pages = document.querySelectorAll('.page');
 
-
     // window.onload = this.addTransformForWrapper();
     // window.onresize = OnePageScroll.addResizeEvent;
     // window.onload = OnePageScroll.addResizeEvent;
+
     this.addFullPageWrapper();
 
     this.addDots();
@@ -35,9 +35,9 @@ class OnePageScroll {
   addFullPageWrapper() {
     this.scrollPage.prepend(this.pageWrapper);
     this.pageWrapper.className = 'page_wrapper';
-    // const pagesArray = Array.from(this.pages);
-    // pagesArray.forEach((page) => this.pageWrapper.append(page));
-    this.pageWrapper.append(this.pages);
+    const pagesArray = Array.from(this.pages);
+    pagesArray.forEach((page) => this.pageWrapper.append(page));
+    /* this.pageWrapper.append(this.pages); */
     this.addHeightForPages();
   }
 
@@ -73,10 +73,13 @@ class OnePageScroll {
   }
 
   addDots() {
+    // console.log('pages1', this.pages.length);
+    this.pages = this.pageWrapper.children.length;
+    // console.log('pages2', this.pages);
     const divForDots = document.createElement('div');
     divForDots.className = 'dots';
     this.scrollPage.append(divForDots);
-    for (let i = 0; i < this.pages.length; i += 1) {
+    for (let i = 0; i < this.pages; i += 1) {
       const dot = document.createElement('button');
       dot.className = 'dot';
       divForDots.append(dot);
@@ -130,7 +133,6 @@ class OnePageScroll {
   addEventsForScroll() {
     document.addEventListener('wheel', this.scrollAssignment.bind(this));
   }
-
 
   addActiveClassForDots() {
     for (let i = 0; i < this.pages; i += 1) {

@@ -118,7 +118,7 @@ class OnePageScroll {
           this.lockFastScroll();
         } else {
           this.goBack();
-          this.OnLockChangesTrue();
+          this.lockFastScroll();
         }
       }
     });

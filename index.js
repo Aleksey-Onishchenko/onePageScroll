@@ -16,7 +16,8 @@ class OnePageScroll {
     this.addFullPageWrapper();
 
     this.addDots();
-    OnePageScroll.addEventsForButton();
+    // OnePageScroll.addEventsForButton();
+    this.addEventsForButton();
     this.addActiveClassForDots();
   }
 
@@ -28,8 +29,6 @@ class OnePageScroll {
   addFullPageWrapper() {
     this.scrollPage.append(this.pageWrapper);
     this.pageWrapper.className = 'page_wrapper';
-    // this.pages = document.querySelectorAll('.page');
-    // console.log('pages:', this.pages.length);
     const pagesArray = Array.from(this.pages);
     pagesArray.forEach((page) => this.pageWrapper.append(page));
     this.addHeightForPages();
@@ -66,10 +65,10 @@ class OnePageScroll {
     this.addActiveClassForDots();
   }
 
-
   goTo(number) {
     this.currentPage = number;
     this.addActiveClassForDots();
+    this.addTransformForWrapper();
   }
 
   addDots() {
@@ -83,7 +82,7 @@ class OnePageScroll {
       divForDots.append(dot);
     }
     this.dots = divForDots.children;
-    // this.addEventsForDots();
+    this.addEventsForDots();
   }
 
   addEventsForDots() {
@@ -92,26 +91,39 @@ class OnePageScroll {
     }
   }
 
-  static addEventsForButton() {
-    document.onkeydown = function (event) {
-      if (event.keyCode === 40) {
-        // this.goNext();
-        console.log('go bottom');
-      }
-      if (event.keyCode === 38) {
-        // this.goBack.bind(this);
-        console.log('go top');
-      }
-    };
-
-    document.onwheel = function (event) {
-      if (event.deltaY > 0) {
-        console.log('Вниз');
-      } else {
-        console.log('Вверх');
-      }
-    };
+  lockFastScroll() {
+    this.onLockChange = true;
+    setTimeout(() => {
+      this.onLockChange = false;
+    }, 1500);
   }
+
+  addEventsForButton() {
+    document.addEventListener('keydown', (event) => {
+      if (!this.onLockChange) {
+        if (event.keyCode === 40) {
+          this.goNext();
+          this.lockFastScroll();
+        }
+        if (event.keyCode === 38) {
+          this.goBack();
+          this.lockFastScroll();
+        }
+      }
+    });
+    document.addEventListener('wheel', (event) => {
+      if (!this.onLockChange) {
+        if (event.deltaY > 0) {
+          this.goNext();
+          this.lockFastScroll();
+        } else {
+          this.goBack();
+          this.OnLockChangesTrue();
+        }
+      }
+    });
+  }
+
 
   addActiveClassForDots() {
     for (let i = 0; i < this.pages; i += 1) {
@@ -119,9 +131,6 @@ class OnePageScroll {
     }
     this.dots[this.currentPage].classList.add('active');
   }
-
-
-
 }
 
 const OnePageScrollInstance = new OnePageScroll('one_page_scroll');

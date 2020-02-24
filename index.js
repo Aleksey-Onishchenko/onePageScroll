@@ -73,11 +73,10 @@ class OnePageScroll {
   }
 
   addDots() {
-    this.pages = this.pageWrapper.children.length;
     const divForDots = document.createElement('div');
     divForDots.className = 'dots';
     this.scrollPage.append(divForDots);
-    for (let i = 0; i < this.pages; i += 1) {
+    for (let i = 0; i < this.pages.length; i += 1) {
       const dot = document.createElement('button');
       dot.className = 'dot';
       divForDots.append(dot);

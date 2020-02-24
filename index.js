@@ -5,33 +5,21 @@ class OnePageScroll {
     this.pages = this.scrollPage.children;
     this.pagesLength = this.pages.lenght;
     this.onLockChange = false;
+    this.transitionTime = 1000;
 
     this.pageWrapper = document.createElement('div');
     this.pages = document.querySelectorAll('.page');
 
-    window.goBack = this.goBack.bind(this);
-    window.goNext = this.goNext.bind(this);
-    window.onload = this.addTransformForWrapper();
-    window.onresize = OnePageScroll.addResizeEvent;
+
+    // window.onload = this.addTransformForWrapper();
+    // window.onresize = OnePageScroll.addResizeEvent;
+    // window.onload = OnePageScroll.addResizeEvent;
     this.addFullPageWrapper();
 
     this.addDots();
+    this.addEventsForScroll();
     this.addEventsForButton();
     this.addActiveClassForDots();
-  }
-
-  static addResizeEvent() {
-    window.onresize = window.innerHeight;
-    this.addTransformForWrapper();
-  }
-
-  addFullPageWrapper() {
-    this.scrollPage.append(this.pageWrapper);
-    this.pageWrapper.className = 'page_wrapper';
-    const pagesArray = Array.from(this.pages);
-    pagesArray.forEach((page) => this.pageWrapper.append(page));
-    this.addHeightForPages();
-    this.addTransformForWrapper();
   }
 
   addHeightForPages() {
@@ -40,8 +28,22 @@ class OnePageScroll {
     }
   }
 
+  addResizeEvent() {
+    window.addEventListener('resize', this.addHeightForPages());
+  }
+
+  addFullPageWrapper() {
+    this.scrollPage.prepend(this.pageWrapper);
+    this.pageWrapper.className = 'page_wrapper';
+    // const pagesArray = Array.from(this.pages);
+    // pagesArray.forEach((page) => this.pageWrapper.append(page));
+    this.pageWrapper.append(this.pages);
+    this.addHeightForPages();
+  }
+
   addTransformForWrapper() {
     this.pageWrapper.style.transform = `translateY(${-window.innerHeight * this.currentPage}px)`;
+    this.pageWrapper.style.transition = `all ${this.transitionTime}ms ease 0s`;
   }
 
   goNext() {
@@ -94,33 +96,40 @@ class OnePageScroll {
     this.onLockChange = true;
     setTimeout(() => {
       this.onLockChange = false;
-    }, 1500);
+    }, this.transitionTime);
+  }
+
+  keyAssignment(event) {
+    if (!this.onLockChange) {
+      if (event.keyCode === 40) {
+        this.goNext();
+        this.lockFastScroll();
+      }
+      if (event.keyCode === 38) {
+        this.goBack();
+        this.lockFastScroll();
+      }
+    }
+  }
+
+  scrollAssignment(event) {
+    if (!this.onLockChange) {
+      if (event.deltaY > 0) {
+        this.goNext();
+        this.lockFastScroll();
+      } else {
+        this.goBack();
+        this.lockFastScroll();
+      }
+    }
   }
 
   addEventsForButton() {
-    document.addEventListener('keydown', (event) => {
-      if (!this.onLockChange) {
-        if (event.keyCode === 40) {
-          this.goNext();
-          this.lockFastScroll();
-        }
-        if (event.keyCode === 38) {
-          this.goBack();
-          this.lockFastScroll();
-        }
-      }
-    });
-    document.addEventListener('wheel', (event) => {
-      if (!this.onLockChange) {
-        if (event.deltaY > 0) {
-          this.goNext();
-          this.lockFastScroll();
-        } else {
-          this.goBack();
-          this.lockFastScroll();
-        }
-      }
-    });
+    document.addEventListener('keydown', this.keyAssignment.bind(this));
+  }
+
+  addEventsForScroll() {
+    document.addEventListener('wheel', this.scrollAssignment.bind(this));
   }
 
 

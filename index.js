@@ -16,7 +16,6 @@ class OnePageScroll {
     this.addFullPageWrapper();
 
     this.addDots();
-    // OnePageScroll.addEventsForButton();
     this.addEventsForButton();
     this.addActiveClassForDots();
   }

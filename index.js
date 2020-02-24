@@ -7,14 +7,16 @@ class OnePageScroll {
     this.onLockChange = false;
 
     this.pageWrapper = document.createElement('div');
+    this.pages = document.querySelectorAll('.page');
 
-
-    // window.goNext = this.goNext.bind(this);
+    window.goBack = this.goBack.bind(this);
+    window.goNext = this.goNext.bind(this);
     window.onload = this.addTransformForWrapper();
     window.onresize = OnePageScroll.addResizeEvent;
     this.addFullPageWrapper();
 
     this.addDots();
+    // OnePageScroll.addEventsForButton();
     this.addEventsForButton();
     this.addActiveClassForDots();
   }
@@ -27,7 +29,6 @@ class OnePageScroll {
   addFullPageWrapper() {
     this.scrollPage.append(this.pageWrapper);
     this.pageWrapper.className = 'page_wrapper';
-    this.pages = document.querySelectorAll('.page');
     const pagesArray = Array.from(this.pages);
     pagesArray.forEach((page) => this.pageWrapper.append(page));
     this.addHeightForPages();
@@ -44,10 +45,19 @@ class OnePageScroll {
     this.pageWrapper.style.transform = `translateY(${-window.innerHeight * this.currentPage}px)`;
   }
 
+  goNext() {
+    if (this.currentPage === this.pages - 1) {
+      this.currentPage = this.pages - 1;
+    } else {
+      this.currentPage += 1;
+    }
+    this.addTransformForWrapper();
+    this.addActiveClassForDots();
+  }
+
   goBack() {
-    console.log('goBack:', this.currentPage);
     if (this.currentPage === 0) {
-      this.currentPage = this.pagesLength - 1;
+      this.currentPage = 0;
     } else {
       this.currentPage -= 1;
     }
@@ -55,30 +65,18 @@ class OnePageScroll {
     this.addActiveClassForDots();
   }
 
-  goNext() {
-    console.log('goNext:', this.currentPage);
-    this.currentPage += 1;
-    if (this.currentPage === this.pagesLength - 1) {
-      this.pagesLength = 0;
-    } else {
-      this.pagesLength += 1;
-    }
-    this.addTransformForWrapper();
-    this.addActiveClassForDots();
-  }
-
-
   goTo(number) {
     this.currentPage = number;
     this.addActiveClassForDots();
+    this.addTransformForWrapper();
   }
 
   addDots() {
-    const pages = this.pageWrapper.children.length;
+    this.pages = this.pageWrapper.children.length;
     const divForDots = document.createElement('div');
     divForDots.className = 'dots';
     this.scrollPage.append(divForDots);
-    for (let i = 0; i < pages; i += 1) {
+    for (let i = 0; i < this.pages; i += 1) {
       const dot = document.createElement('button');
       dot.className = 'dot';
       divForDots.append(dot);
@@ -88,21 +86,51 @@ class OnePageScroll {
   }
 
   addEventsForDots() {
+    for (let i = 0; i < this.pages; i += 1) {
+      this.dots[i].addEventListener('click', this.goTo.bind(this, i));
+    }
+  }
 
-  //  this.goTo();
+  lockFastScroll() {
+    this.onLockChange = true;
+    setTimeout(() => {
+      this.onLockChange = false;
+    }, 1500);
   }
 
   addEventsForButton() {
-    // this.goNext();
-    // this.goBack();
+    document.addEventListener('keydown', (event) => {
+      if (!this.onLockChange) {
+        if (event.keyCode === 40) {
+          this.goNext();
+          this.lockFastScroll();
+        }
+        if (event.keyCode === 38) {
+          this.goBack();
+          this.lockFastScroll();
+        }
+      }
+    });
+    document.addEventListener('wheel', (event) => {
+      if (!this.onLockChange) {
+        if (event.deltaY > 0) {
+          this.goNext();
+          this.lockFastScroll();
+        } else {
+          this.goBack();
+          this.OnLockChangesTrue();
+        }
+      }
+    });
   }
+
 
   addActiveClassForDots() {
-  
+    for (let i = 0; i < this.pages; i += 1) {
+      this.dots[i].classList.remove('active');
+    }
+    this.dots[this.currentPage].classList.add('active');
   }
-
-
-
 }
 
 const OnePageScrollInstance = new OnePageScroll('one_page_scroll');

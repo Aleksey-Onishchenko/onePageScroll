@@ -43,3 +43,6 @@ body .yellow {
 body .blue {
   background: #0798ec;
 }
+body .active {
+  background: #42b6f5;
+}

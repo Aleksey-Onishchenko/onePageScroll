@@ -3,16 +3,11 @@ class OnePageScroll {
     this.scrollPage = document.getElementById(id);
     this.currentPage = 0;
     this.pages = this.scrollPage.children;
-    this.pagesLength = this.pages.lenght;
+    this.pagesLength = this.pages.length;
     this.onLockChange = false;
-    this.transitionTime = 1000;
 
     this.pageWrapper = document.createElement('div');
     this.pages = document.querySelectorAll('.page');
-
-    // window.onload = this.addTransformForWrapper();
-    // window.onresize = OnePageScroll.addResizeEvent;
-    // window.onload = OnePageScroll.addResizeEvent;
 
     this.addFullPageWrapper();
 
@@ -20,35 +15,37 @@ class OnePageScroll {
     this.addEventsForScroll();
     this.addEventsForButton();
     this.addActiveClassForDots();
+    this.lockFastScroll();
+    this.addResizeEvent();
   }
 
   addHeightForPages() {
-    for (let i = 0; i < this.pages.length; i += 1) {
+    for (let i = 0; i < this.pagesLength; i += 1) {
       this.pages[i].style.height = `${window.innerHeight}px`;
     }
   }
 
   addResizeEvent() {
-    window.addEventListener('resize', this.addHeightForPages());
+    window.addEventListener('resize', this.addHeightForPages.bind(this));
+    window.addEventListener('resize', this.addTransformForWrapper.bind(this));
   }
 
   addFullPageWrapper() {
+    this.pageWrapper.append(...this.scrollPage.children);
     this.scrollPage.prepend(this.pageWrapper);
     this.pageWrapper.className = 'page_wrapper';
-    const pagesArray = Array.from(this.pages);
-    pagesArray.forEach((page) => this.pageWrapper.append(page));
-    /* this.pageWrapper.append(this.pages); */
+
     this.addHeightForPages();
   }
 
   addTransformForWrapper() {
     this.pageWrapper.style.transform = `translateY(${-window.innerHeight * this.currentPage}px)`;
-    this.pageWrapper.style.transition = `all ${this.transitionTime}ms ease 0s`;
   }
 
   goNext() {
-    if (this.currentPage === this.pages - 1) {
-      this.currentPage = this.pages - 1;
+    if (this.currentPage === this.pagesLength - 1) {
+      this.currentPage = this.pagesLength - 1;
+      this.onLockChange = false;
     } else {
       this.currentPage += 1;
     }
@@ -59,6 +56,7 @@ class OnePageScroll {
   goBack() {
     if (this.currentPage === 0) {
       this.currentPage = 0;
+      this.onLockChange = false;
     } else {
       this.currentPage -= 1;
     }
@@ -73,13 +71,10 @@ class OnePageScroll {
   }
 
   addDots() {
-    // console.log('pages1', this.pages.length);
-    this.pages = this.pageWrapper.children.length;
-    // console.log('pages2', this.pages);
     const divForDots = document.createElement('div');
     divForDots.className = 'dots';
     this.scrollPage.append(divForDots);
-    for (let i = 0; i < this.pages; i += 1) {
+    for (let i = 0; i < this.pagesLength; i += 1) {
       const dot = document.createElement('button');
       dot.className = 'dot';
       divForDots.append(dot);
@@ -89,27 +84,24 @@ class OnePageScroll {
   }
 
   addEventsForDots() {
-    for (let i = 0; i < this.pages; i += 1) {
+    for (let i = 0; i < this.pagesLength; i += 1) {
       this.dots[i].addEventListener('click', this.goTo.bind(this, i));
     }
   }
 
   lockFastScroll() {
-    this.onLockChange = true;
-    setTimeout(() => {
-      this.onLockChange = false;
-    }, this.transitionTime);
+    this.pageWrapper.addEventListener('transitionend', () => { this.onLockChange = false; });
   }
 
   keyAssignment(event) {
     if (!this.onLockChange) {
       if (event.keyCode === 40) {
+        this.onLockChange = true;
         this.goNext();
-        this.lockFastScroll();
       }
       if (event.keyCode === 38) {
+        this.onLockChange = true;
         this.goBack();
-        this.lockFastScroll();
       }
     }
   }
@@ -117,11 +109,11 @@ class OnePageScroll {
   scrollAssignment(event) {
     if (!this.onLockChange) {
       if (event.deltaY > 0) {
+        this.onLockChange = true;
         this.goNext();
-        this.lockFastScroll();
       } else {
+        this.onLockChange = true;
         this.goBack();
-        this.lockFastScroll();
       }
     }
   }
@@ -135,7 +127,7 @@ class OnePageScroll {
   }
 
   addActiveClassForDots() {
-    for (let i = 0; i < this.pages; i += 1) {
+    for (let i = 0; i < this.pagesLength; i += 1) {
       this.dots[i].classList.remove('active');
     }
     this.dots[this.currentPage].classList.add('active');

@@ -45,6 +45,7 @@ class OnePageScroll {
   }
 
   goNext() {
+    
       if (this.currentPage !== this.pagesLength - 1 && !this.onLockChange) { // если текущая страница === длинне страниц (последняя)
         this.onLockChange = true;
         this.currentPage += 1;

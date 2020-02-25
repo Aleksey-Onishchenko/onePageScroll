@@ -6,8 +6,6 @@ class OnePageScroll {
     this.pagesLength = this.pages.length;
     this.onLockChange = false;
 
-    this.pageWrapper = document.createElement('div');
-    this.pages = document.querySelectorAll('.page');
 
     this.addFullPageWrapper();
 
@@ -20,6 +18,7 @@ class OnePageScroll {
   }
 
   addHeightForPages() {
+    this.pages = document.querySelectorAll('.page');
     for (let i = 0; i < this.pagesLength; i += 1) {
       this.pages[i].style.height = `${window.innerHeight}px`;
     }
@@ -33,6 +32,7 @@ class OnePageScroll {
   }
 
   addFullPageWrapper() {
+    this.pageWrapper = document.createElement('div');
     this.pageWrapper.append(...this.scrollPage.children);
     this.scrollPage.prepend(this.pageWrapper);
     this.pageWrapper.className = 'page_wrapper';
@@ -41,19 +41,16 @@ class OnePageScroll {
   }
 
   addTransformForWrapper() {
-    this.pageWrapper.style.transform = `translateY(${-window.innerHeight * this.currentPage}px)`;
+    this.pageWrapper.style.transform = `translate3d(0px, ${-window.innerHeight * this.currentPage}px, 0px)`;
   }
 
   goNext() {
-    if (!this.onLockChange) {
-      if (this.currentPage === this.pagesLength - 1) {
-        // this.onLockChange = true;
-        this.currentPage = this.pagesLength - 1;
-        // this.onLockChange = false;
-      } else {
+    if (!this.onLockChange) { // если ЛОК - ТРУ
+      if (this.currentPage !== this.pagesLength - 1 && !this.onLockChange) { // если текущая страница === длинне страниц (последняя)
         this.onLockChange = true;
         this.currentPage += 1;
-        // this.onLockChange = false;
+      } else if (!this.onLockChange) {
+        this.currentPage = this.pagesLength - 1;
       }
     }
     this.addTransformForWrapper();
@@ -61,14 +58,11 @@ class OnePageScroll {
   }
 
   goBack() {
-    if (!this.onLockChange) {
-      if (this.currentPage === 0) {
-        // this.onLockChange = true;
-        this.currentPage = 0;
-      } else {
-        this.onLockChange = true;
-        this.currentPage -= 1;
-      }
+    if (this.currentPage !== 0 && !this.onLockChange) {
+      this.onLockChange = true;
+      this.currentPage -= 1;
+    } else if (!this.onLockChange) {
+      this.currentPage = 0;
     }
     this.addTransformForWrapper();
     this.addActiveClassForDots();
@@ -76,16 +70,18 @@ class OnePageScroll {
 
   goTo(number) {
     console.log(this.onLockChange);
-    if (!this.onLockChange) {
-      this.currentPage = number;
+    if (this.currentPage !== undefined && !this.onLockChange) {
       this.onLockChange = true;
-      setTimeout(() => {
-        this.onLockChange = false;
-      }, 1000);
+      this.currentPage = number;
+      // this.onLockChange = true;
+    } else {
+      // this.onLockChange = false;
+      return false;
     }
     this.addActiveClassForDots();
     this.addTransformForWrapper();
     this.addEventsForWrapper();
+    return null;
   }
 
   addDots() {

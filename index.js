@@ -45,42 +45,36 @@ class OnePageScroll {
   }
 
   goNext() {
-    
-      if (this.currentPage !== this.pagesLength - 1 && !this.onLockChange) { // если текущая страница === длинне страниц (последняя)
-        this.onLockChange = true;
-        this.currentPage += 1;
-      } else if (!this.onLockChange) {
-        this.currentPage = this.pagesLength - 1;
+      let number = this.currentPage;
+
+      if (number !== this.pagesLength - 1) {
+        number += 1;
       }
-    this.addTransformForWrapper();
-    this.addActiveClassForDots();
+      this.goTo(number);
   }
 
   goBack() {
-    if (this.currentPage !== 0 && !this.onLockChange) {
-      this.onLockChange = true;
-      this.currentPage -= 1;
-    } else if (!this.onLockChange) {
-      this.currentPage = 0;
+    let number = this.currentPage;
+    
+    if (number > 0) {
+      number -= 1;
     }
-    this.addTransformForWrapper();
-    this.addActiveClassForDots();
+    this.goTo(number);
   }
 
   goTo(number) {
-    console.log(this.onLockChange);
-    if (this.currentPage !== undefined && !this.onLockChange) {
-      this.onLockChange = true;
-      this.currentPage = number;
-      // this.onLockChange = true;
-    } else {
-      // this.onLockChange = false;
-      return false;
+    if (this.currentPage === number) {
+      return;
     }
+    
+    if (this.onLockChange) {
+       return;
+    }
+    
+    this.currentPage = number;
+    this.onLockChange = true;
     this.addActiveClassForDots();
     this.addTransformForWrapper();
-    this.addEventsForWrapper();
-    return null;
   }
 
   addDots() {

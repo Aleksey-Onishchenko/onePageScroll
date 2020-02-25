@@ -75,12 +75,17 @@ class OnePageScroll {
   }
 
   goTo(number) {
-    // if (!this.onLockChange) {
-    this.onLockChange = true;
-    this.currentPage = number;
-    // }
+    console.log(this.onLockChange);
+    if (!this.onLockChange) {
+      this.currentPage = number;
+      this.onLockChange = true;
+      setTimeout(() => {
+        this.onLockChange = false;
+      }, 1000);
+    }
     this.addActiveClassForDots();
     this.addTransformForWrapper();
+    this.addEventsForWrapper();
   }
 
   addDots() {
@@ -113,7 +118,7 @@ class OnePageScroll {
     if (event.keyCode === 38) {
       this.goBack();
     }
-}
+  }
 
   scrollAssignment(event) {
     if (event.deltaY > 0) {

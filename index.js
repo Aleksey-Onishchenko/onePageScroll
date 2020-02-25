@@ -15,7 +15,7 @@ class OnePageScroll {
     this.addEventsForScroll();
     this.addEventsForButton();
     this.addActiveClassForDots();
-    this.lockFastScroll();
+    this.addEventsForWrapper();
     this.addResizeEvent();
   }
 
@@ -26,8 +26,10 @@ class OnePageScroll {
   }
 
   addResizeEvent() {
-    window.addEventListener('resize', this.addHeightForPages.bind(this));
-    window.addEventListener('resize', this.addTransformForWrapper.bind(this));
+    window.addEventListener('resize', () => {
+      this.addTransformForWrapper();
+      this.addHeightForPages();
+    });
   }
 
   addFullPageWrapper() {
@@ -43,29 +45,40 @@ class OnePageScroll {
   }
 
   goNext() {
-    if (this.currentPage === this.pagesLength - 1) {
-      this.currentPage = this.pagesLength - 1;
-      this.onLockChange = false;
-    } else {
-      this.currentPage += 1;
+    if (!this.onLockChange) {
+      if (this.currentPage === this.pagesLength - 1) {
+        // this.onLockChange = true;
+        this.currentPage = this.pagesLength - 1;
+        // this.onLockChange = false;
+      } else {
+        this.onLockChange = true;
+        this.currentPage += 1;
+        // this.onLockChange = false;
+      }
     }
     this.addTransformForWrapper();
     this.addActiveClassForDots();
   }
 
   goBack() {
-    if (this.currentPage === 0) {
-      this.currentPage = 0;
-      this.onLockChange = false;
-    } else {
-      this.currentPage -= 1;
+    if (!this.onLockChange) {
+      if (this.currentPage === 0) {
+        // this.onLockChange = true;
+        this.currentPage = 0;
+      } else {
+        this.onLockChange = true;
+        this.currentPage -= 1;
+      }
     }
     this.addTransformForWrapper();
     this.addActiveClassForDots();
   }
 
   goTo(number) {
+    // if (!this.onLockChange) {
+    this.onLockChange = true;
     this.currentPage = number;
+    // }
     this.addActiveClassForDots();
     this.addTransformForWrapper();
   }
@@ -89,32 +102,24 @@ class OnePageScroll {
     }
   }
 
-  lockFastScroll() {
+  addEventsForWrapper() {
     this.pageWrapper.addEventListener('transitionend', () => { this.onLockChange = false; });
   }
 
   keyAssignment(event) {
-    if (!this.onLockChange) {
-      if (event.keyCode === 40) {
-        this.onLockChange = true;
-        this.goNext();
-      }
-      if (event.keyCode === 38) {
-        this.onLockChange = true;
-        this.goBack();
-      }
+    if (event.keyCode === 40) {
+      this.goNext();
     }
-  }
+    if (event.keyCode === 38) {
+      this.goBack();
+    }
+}
 
   scrollAssignment(event) {
-    if (!this.onLockChange) {
-      if (event.deltaY > 0) {
-        this.onLockChange = true;
-        this.goNext();
-      } else {
-        this.onLockChange = true;
-        this.goBack();
-      }
+    if (event.deltaY > 0) {
+      this.goNext();
+    } else {
+      this.goBack();
     }
   }
 
